@@ -40,7 +40,7 @@ options.register ('FastSim', # register 'runon' option
                   VarParsing.VarParsing.varType.bool,         # string, int, or float
                   "If you are dealing with a FastSim (but not a model scan!), set this to True, otherwise to False (default)")
 options.register ('doPhotonStuff',
-                  False,
+                  True,
                   VarParsing.VarParsing.multiplicity.singleton, # singleton or list
                   VarParsing.VarParsing.varType.bool,         # string, int, or float
                   "If you want to run the photon-analyses specific configuration, set to True, otherwise False (default)")
@@ -93,7 +93,7 @@ else:
       if (options.is2011):
          process.GlobalTag.globaltag = "START53_LV4::All"
       else:
-         process.GlobalTag.globaltag = "START53_V7N::All"
+         process.GlobalTag.globaltag = "START53_V7A::All"
 
 
 ### Input/Output ###############################################################

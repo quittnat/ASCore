@@ -3152,7 +3152,7 @@ bool NTupleProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup){
 	if (!fIsRealData){
 	  std::string jet_type = "all";
 	  for (reco::GenParticleCollection::const_iterator gpart = GlobalGenParticles->begin(); gpart != GlobalGenParticles->end(); gpart++){
-	    if( gpart->status() != 3 ) continue;
+	    if( gpart->status() != 3 ) continue; //hard part of interaction, from gluon or quarks
 	    if( (gpart->pdgId()<-4) || (gpart->pdgId()>4 && gpart->pdgId()!=21)) continue;
 	    double dr = reco::deltaR(gpart->eta(), gpart->phi(), fTJEta->back(), fTJPhi->back());
 	    if(dr > 0.3) continue;
