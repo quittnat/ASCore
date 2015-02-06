@@ -1,4 +1,4 @@
-// -*- C++ -*-
+//-*- C++ -*-
 //
 // Package:    NTupleProducer
 // Class:      NTupleProducer
@@ -1001,7 +1001,7 @@ bool NTupleProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup){
     fTVrtxNtrks ->push_back( vertexit->nTracks() );
     fTVrtxSumPt ->push_back( vertexit->p4().pt() );
     fTVrtxIsFake->push_back( vertexit->isFake() );
-  }
+    }
   *fTNVrtx = fTVrtxX->size();
 
 
@@ -1276,7 +1276,11 @@ bool NTupleProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup){
 
       fTGenPhotonPt->push_back( gen_photons[i]->pt() );
       fTGenPhotonEta->push_back( gen_photons[i]->eta() );
+    
       fTGenPhotonPhi->push_back( gen_photons[i]->phi() );
+	  fTGenPhotonVx->push_back( gen_photons[i]->vx() );
+	  fTGenPhotonVy->push_back( gen_photons[i]->vy() );
+	  fTGenPhotonVz->push_back( gen_photons[i]->vz() );
       fTGenPhotonMotherID->push_back( gen_photons_mothers[i]!=NULL ? gen_photons_mothers[i]->pdgId() : -999 );
       fTGenPhotonMotherStatus->push_back( gen_photons_mothers[i]!=NULL ? gen_photons_mothers[i]->status() : -999 );
       fTGenPhotonPartonMindR->push_back( -999.99 ); // Initialize
@@ -2221,11 +2225,26 @@ bool NTupleProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup){
       fTPhoNewIsoPFPhoton->push_back(999);
       fTPhoNewIsoPFNeutral->push_back(999);
     }
-
-  
+ //MQ
+	
+  	 if(doPhotonStuff){
+    //  for(VertexCollection::const_iterator vertexit = vertices->begin(); vertexit != vertices->end(); ++vertexit) {
+  	 for(unsigned int it = 0; it < vertices->size(); ++it) {   
+   	//MQ write out isolation for each vertex, store it in photon object
+	  edm::ParameterSet vtxiConfig = edm::ParameterSet();
+	  vtxiConfig.insert(true,"tag_jets",edm::Entry("tag_jets",edm::InputTag("ak5PFJetsCorrected"),false));
+      SuperClusterFootprintRemoval SCFRforallvtx(iEvent,iSetup,vtxiConfig); 
+      PFIsolation_struct isosallvtx = SCFRforallvtx.PFIsolation(photon.superCluster(),edm::Ptr<Vertex>(vertices,it));
+    //isolation with vtx constraint
+      fTPhoSCRemovalPFIsoChargedVtxConst->push_back(isosallvtx.chargediso_primvtx); 
+   	  fTPhoSCRemovalPFIsoChargedVtxConstRCone->push_back(isosallvtx.chargediso_primvtx_rcone);
+       
+	  }
+    
+   
+    }
     float PhoHCalIso2012ConeDR03 = photon.hcalTowerSumEtConeDR03() + (photon.hadronicOverEm() - photon.hadTowOverEm())*photon.superCluster()->energy()/cosh(photon.superCluster()->eta());
     fTPhoHCalIso2012ConeDR03->push_back(PhoHCalIso2012ConeDR03);
-
     {
       edm::ParameterSet myiConfig = edm::ParameterSet();
       myiConfig.insert(true,"tag_jets",edm::Entry("tag_jets",edm::InputTag("ak5PFJetsCorrected"),false));
@@ -2764,8 +2783,8 @@ bool NTupleProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup){
     for (int i=0; i<(int)diphotons_first.size() && i<gMax_vertexing_diphoton_pairs; i++) { // write output of vertexing
       fTDiphotonsfirst->push_back(diphotons_first.at(i));
       fTDiphotonssecond->push_back(diphotons_second.at(i));
-      fTVtxdiphoh2gglobe->push_back(vtx_dipho_h2gglobe.at(i).at(0));
       fTVtxdiphomva->push_back(vtx_dipho_mva.at(i).at(0));
+      fTVtxdiphoh2gglobe->push_back(vtx_dipho_h2gglobe.at(i).at(0));
       fTVtxdiphoproductrank->push_back(vtx_dipho_productrank.at(i).at(0));
     }
 
@@ -3916,6 +3935,9 @@ void NTupleProducer::declareProducts(void) {
   produces<std::vector<float> >("GenLeptonGMPhi");
   produces<int>("NGenPhotons");
   produces<std::vector<float> >("GenPhotonPt");
+  produces<std::vector<float> >("GenPhotonVx");
+  produces<std::vector<float> >("GenPhotonVy");
+  produces<std::vector<float> >("GenPhotonVz");
   produces<std::vector<float> >("GenPhotonEta");
   produces<std::vector<float> >("GenPhotonPhi");
   produces<std::vector<float> >("GenPhotonPartonMindR");
@@ -4569,7 +4591,9 @@ produces<std::vector<float> >("PhoSCRemovalPFIsoNeutralRCone");
 produces<std::vector<float> >("PhoSCRemovalPFIsoPhotonRCone");
 produces<std::vector<float> >("PhoSCRemovalRConeEta");
 produces<std::vector<float> >("PhoSCRemovalRConePhi");
-
+//MQ
+produces<std::vector<float> >("PhoSCRemovalPFIsoChargedVtxConst");
+produces<std::vector<float> >("PhoSCRemovalPFIsoChargedVtxConstRCone");
 
 }
 
@@ -4711,6 +4735,9 @@ void NTupleProducer::resetProducts( void ) {
   fTGenPhotonPt.reset(new std::vector<float> );
   fTGenPhotonEta.reset(new std::vector<float> );
   fTGenPhotonPhi.reset(new std::vector<float> );
+  fTGenPhotonVx.reset(new std::vector<float> );
+  fTGenPhotonVy.reset(new std::vector<float> );
+  fTGenPhotonVz.reset(new std::vector<float> );
   fTGenPhotonPartonMindR.reset(new std::vector<float> );
   fTGenPhotonMotherID.reset(new std::vector<int> );
   fTGenPhotonMotherStatus.reset(new std::vector<int> );
@@ -5379,6 +5406,10 @@ fTPhoSCRemovalPFIsoNeutralRCone.reset(new std::vector<float>  );
 fTPhoSCRemovalPFIsoPhotonRCone.reset(new std::vector<float>  );
 fTPhoSCRemovalRConeEta.reset(new std::vector<float>  );
 fTPhoSCRemovalRConePhi.reset(new std::vector<float>  );
+//MQ
+
+fTPhoSCRemovalPFIsoChargedVtxConst.reset(new std::vector<float>  );
+fTPhoSCRemovalPFIsoChargedVtxConstRCone.reset(new std::vector<float>  );
 
 }
 
@@ -5574,6 +5605,9 @@ void NTupleProducer::putProducts( edm::Event& event ) {
   event.put(fTGenPhotonPt, "GenPhotonPt");
   event.put(fTGenPhotonEta, "GenPhotonEta");
   event.put(fTGenPhotonPhi, "GenPhotonPhi");
+  event.put(fTGenPhotonVx, "GenPhotonVx");
+  event.put(fTGenPhotonVy, "GenPhotonVy");
+  event.put(fTGenPhotonVz, "GenPhotonVz");
   event.put(fTGenPhotonPartonMindR, "GenPhotonPartonMindR");
   event.put(fTGenPhotonMotherID, "GenPhotonMotherID");
   event.put(fTGenPhotonMotherStatus, "GenPhotonMotherStatus");
@@ -6229,6 +6263,8 @@ event.put(fTPhoSCRemovalPFIsoNeutralRCone,"PhoSCRemovalPFIsoNeutralRCone");
 event.put(fTPhoSCRemovalPFIsoPhotonRCone,"PhoSCRemovalPFIsoPhotonRCone");
 event.put(fTPhoSCRemovalRConeEta, "PhoSCRemovalRConeEta");
 event.put(fTPhoSCRemovalRConePhi, "PhoSCRemovalRConePhi");
+event.put(fTPhoSCRemovalPFIsoChargedVtxConst,"PhoSCRemovalPFIsoChargedVtxConst");
+event.put(fTPhoSCRemovalPFIsoChargedVtxConstRCone,"PhoSCRemovalPFIsoChargedVtxConstRCone");
 
 }
 

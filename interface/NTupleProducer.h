@@ -637,6 +637,9 @@ private:
   std::auto_ptr<std::vector<float> >  fTGenPhotonPt;
   std::auto_ptr<std::vector<float> >  fTGenPhotonEta;
   std::auto_ptr<std::vector<float> >  fTGenPhotonPhi;
+  std::auto_ptr<std::vector<float> >  fTGenPhotonVx;
+  std::auto_ptr<std::vector<float> >  fTGenPhotonVy;
+  std::auto_ptr<std::vector<float> >  fTGenPhotonVz;
   std::auto_ptr<std::vector<float> >  fTGenPhotonPartonMindR;
   std::auto_ptr<std::vector<int> >  fTGenPhotonMotherID;
   std::auto_ptr<std::vector<int> >  fTGenPhotonMotherStatus;
@@ -1304,6 +1307,8 @@ std::auto_ptr<std::vector<float> > fTPhoSCRemovalPFIsoNeutral;
 std::auto_ptr<std::vector<float> > fTPhoSCRemovalPFIsoPhoton;
 std::auto_ptr<std::vector<float> > fTPhoSCRemovalPFIsoChargedRCone;
 std::auto_ptr<std::vector<float> > fTPhoSCRemovalPFIsoChargedPrimVtxRCone;
+std::auto_ptr<std::vector<float> > fTPhoSCRemovalPFIsoChargedVtxConstRCone;
+std::auto_ptr<std::vector<float> > fTPhoSCRemovalPFIsoChargedVtxConst;
 std::auto_ptr<std::vector<float> > fTPhoSCRemovalPFIsoNeutralRCone;
 std::auto_ptr<std::vector<float> > fTPhoSCRemovalPFIsoPhotonRCone;
 std::auto_ptr<std::vector<float> > fTPhoSCRemovalRConeEta;
